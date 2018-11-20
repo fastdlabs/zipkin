@@ -4,11 +4,12 @@
  * @time: 2018/11/16
  */
 
-namespace Provider;
+namespace FastD\Zipkin\Provider;
 
 use FastD\Container\Container;
 use FastD\Container\ServiceProviderInterface;
 use FastD\Zipkin\Middleware\ZipkinMiddleware;
+use FastD\Zipkin\Span;
 
 /**
  * Class ZipkinProvider
@@ -22,6 +23,18 @@ class ZipkinProvider implements ServiceProviderInterface
      */
     public function register(Container $container)
     {
+
+        $zipkin = array_merge(
+            load(app()->getPath().'/config/zipkin.php'),
+            config()->get('zipkin', [])
+        );
+
+        config()->merge([
+            'zipkin' => $zipkin,
+        ]);
+
+        $container->add('zipkin', new Span());
+
         $container->get('dispatcher')->before(new ZipkinMiddleware());
     }
 }
