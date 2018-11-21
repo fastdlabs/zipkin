@@ -85,9 +85,14 @@ class Zipkin implements SpanInterface, ChildSpanInterface
     protected static $childFinished = true;
 
     /**
-     * @var
+     * @var string
      */
     protected static $appName;
+
+    /**
+     * @var string
+     */
+    protected static $kind;
 
     /**
      * create the tracing
@@ -98,6 +103,7 @@ class Zipkin implements SpanInterface, ChildSpanInterface
     public static function createZipkin($name, $options = [], $isParent = true)
     {
         self::$appName = $name;
+        self::$kind = $options['kind'] ?? self::CONSUMER;
         $endpoint = Endpoint::create(app()->getName(), get_local_ip(), null, config()->get('server.host'));
         $reporter = new Http(CurlFactory::create(), $options);
         $sampler = BinarySampler::createAsAlwaysSample();

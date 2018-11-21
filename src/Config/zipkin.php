@@ -8,7 +8,8 @@ return [
         'name' => 'app_default',
         'is_parent' => false,
         'options' => [
-
+            'endpoint_url' => 'http://localhost:9411/api/v2/spans',
+            'kind' => \FastD\Zipkin\Zipkin::CONSUMER
         ]
     ]
 ];
