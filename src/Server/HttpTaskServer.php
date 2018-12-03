@@ -8,15 +8,19 @@ namespace FastD\Zipkin\Server;
 
 use FastD\Servitization\Server\HTTPServer;
 use swoole_server;
+use Wangjian\Queue\Job\AbstractJob;
 
 class HttpTaskServer extends HTTPServer
 {
     public function doTask(swoole_server $server, $data, $taskId, $workerId)
     {
-        try{
+        try {
             $data->run();
-        }catch (\Exception $exception) {
-            // @todo
+        } catch (\Exception $exception) {
+            if ($data instanceof AbstractJob) {
+                queue()->push($data);
+            }
+            logger()->error('zipkin: ' . $exception->getMessage());
         }
     }
 }

@@ -95,15 +95,22 @@ class Zipkin implements SpanInterface, ChildSpanInterface
     protected static $kind;
 
     /**
+     * @var bool
+     */
+    protected static $isDebug;
+
+    /**
      * create the tracing
      *
      * @param $name
      * @param array $options
+     * @param bool $isParent
      */
     public static function createZipkin($name, $options = [], $isParent = true)
     {
         self::$appName = $name;
         self::$kind = $options['kind'] ?? self::CONSUMER;
+        self::$isDebug = $options['is_debug'] ?? false;
         $endpoint = Endpoint::create(app()->getName(), get_local_ip(), null, config()->get('server.host'));
         $reporter = new Http(CurlFactory::create(), $options);
         $sampler = BinarySampler::createAsAlwaysSample();
@@ -171,8 +178,8 @@ class Zipkin implements SpanInterface, ChildSpanInterface
             'x-b3-traceid' => $carrier['x_b3_traceid'][0] ?? null,
             'x-b3-spanid' => $carrier['x_b3_spanid'][0] ?? null,
             'x-b3-parentspanid' => $carrier['x_b3_parentspanid'][0] ?? null,
-            'x-b3-sampled' => current($carrier['x_b3_sampled']) ?? null,
-            'x-b3-flags' => current($carrier['x_b3_flags']) ?? null,
+            'x-b3-sampled' => current($carrier['x_b3_sampled'] ?? []),
+            'x-b3-flags' => current($carrier['x_b3_flags'] ?? []),
         ];
     }
 
@@ -188,7 +195,7 @@ class Zipkin implements SpanInterface, ChildSpanInterface
             B3::SPAN_ID_NAME => self::$childSpan->getContext()->getSpanId(),
             B3::PARENT_SPAN_ID_NAME => self::$childSpan->getContext()->getParentId(),
             B3::SAMPLED_NAME => 1,
-            B3::FLAGS_NAME => 0,  // 1 is_debug, 0 prod
+            B3::FLAGS_NAME => self::$isDebug ? 1 : 0,  // 1 is_debug, 0 prod
         ];
     }
 
@@ -233,6 +240,9 @@ class Zipkin implements SpanInterface, ChildSpanInterface
         self::$childSpan->annotate($annotate, now());
     }
 
+    /**
+     * @param array $tag
+     */
     public static function childTag(array $tag)
     {
         self::$childSpan->tag(key($tag), current($tag));

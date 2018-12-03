@@ -59,9 +59,14 @@ class Span
         Zipkin::newChild();
         Zipkin::setChildKind($kind);
         Zipkin::setChildName($name);
-        Zipkin::injector();
+        //Zipkin::injector();
         !is_null($annotate) && Zipkin::childAnnotate($annotate);
         !empty($tag) && Zipkin::childTag($tag);
+    }
+
+    public function childTag(array $tag)
+    {
+        Zipkin::childTag($tag);
     }
 
     public function childFinished()

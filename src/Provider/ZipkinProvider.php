@@ -25,13 +25,11 @@ class ZipkinProvider implements ServiceProviderInterface
     {
 
         $zipkin = array_merge(
-            load(app()->getPath().'/config/zipkin.php'),
+            load(app()->getPath() . '/config/zipkin.php'),
             config()->get('zipkin', [])
         );
 
-        config()->merge([
-            'zipkin' => $zipkin,
-        ]);
+        config()->merge(['zipkin' => $zipkin,]);
 
         $container->add('zipkin', new Span());
 

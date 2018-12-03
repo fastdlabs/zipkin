@@ -10,6 +10,8 @@ use FastD\Middleware\DelegateInterface;
 use FastD\Middleware\Middleware;
 use FastD\Zipkin\Queue\SpanQueue;
 use FastD\Zipkin\Server\HttpTaskServer;
+use FastD\Zipkin\XHProfRuns_Default;
+use FastD\Zipkin\XHPRuns;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -37,8 +39,9 @@ class ZipkinMiddleware extends Middleware
             $response = $next->process($request);
         } finally {
             // 考虑上报时的性能损失，这里使用task, 前提需要使用 HttpTaskServer::class 作为HttpServer，目前仅支持Http
+            $queueClass = config()->get('zipkin.queue_class');
             if (app()->has('server') && HttpTaskServer::class === config()->get('server')) {
-                server()->getSwoole()->task(new SpanQueue());
+                server()->getSwoole()->task(new $queueClass());
             } else {
                 app()->get('zipkin')->finished();
             }

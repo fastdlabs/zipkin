@@ -3,6 +3,7 @@
  * @author: ZhaQiu <34485431@qq.com>
  * @time: 2018/11/19
  */
+
 namespace FastD\Zipkin\Contracts;
 
 /**
@@ -19,6 +20,8 @@ interface ChildSpanInterface
     public static function setChildName();
 
     public static function childAnnotate(string $annotate);
+
+    public static function childTag(array $tag);
 
     public static function childFinish();
 }

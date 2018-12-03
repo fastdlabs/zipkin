@@ -6,10 +6,12 @@
 return [
     'span' => [
         'name' => 'app_default',
+        'queue_class' => \FastD\Zipkin\Queue\SpanQueue::class,
         'is_parent' => false,
         'options' => [
             'endpoint_url' => 'http://localhost:9411/api/v2/spans',
-            'kind' => \FastD\Zipkin\Zipkin::CONSUMER
+            'kind' => \FastD\Zipkin\Zipkin::CONSUMER,
+            'is_debug' => false
         ]
     ]
 ];

@@ -6,10 +6,12 @@
 
 namespace FastD\Zipkin\Queue;
 
+use FastD\Zipkin\Contracts\QueueInterface;
+
 /**
  * Class SpanQueue
  */
-class SpanQueue
+class SpanQueue implements QueueInterface
 {
     public function run()
     {
